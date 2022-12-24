@@ -1,0 +1,32 @@
+Installation Instruction for ex2 - 
+working on a local python environment
+
+Below you can find how to make the exercise working on your laptop/pc, with virtual machine and VSCode as editor. You can use or do not use virtual machine, the same for VScode.
+
+1. Download python - https://www.python.org/downloads/ - pay attention to add python to the environment variables (check box in the installation).
+
+2. Download VScode (for edit python files).
+
+3. Create a folder to the exercise and put there the exercise python file downloaded from the classroom.
+
+4. Open terminal and go to the exercise folder location
+create a virtual machine: python -m venv ./
+python3 -m venv tutorial-env
+
+5. Activate your environment. In windows you should enter: Scripts\activate.bat. 
+Then the virtual environment name shold be in parentheses before the folder name in the terminal.
+source tutorial-env/bin/activate
+
+6. Open VScode then open the exercise folder. VScode should suggest you to download python extension, otherwise, download it using the extension tab.
+Please make sure that python interpreter is the virtual environment you created (button right in VScode).
+
+7. In the left side of VScode you should see your folder content. Run “regression_&_regularization_exercise.py” (it wil ask you to add a configuration and accept it).
+
+8. Please install also some basic libraries. Go back to the command line (pay attention that you are in the virtual machine) and enter
+pip install numpy
+pip install scipy
+pip install pandas
+pip install matplotlib
+pip install scikit-learn
+
+
