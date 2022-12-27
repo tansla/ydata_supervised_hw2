@@ -6,27 +6,28 @@ class Ols(object):
     
   @staticmethod
   def pad(X):
-    pass
+    return np.append(np.ones([X.shape[0],1]),X,axis=1)
   
   def fit(self, X, Y):
-    #remeber pad with 1 before fitting
-    pass
+    #remember pad with 1 before fitting
+    self._fit(self.pad(X), Y)    
   
   def _fit(self, X, Y):
     # optional to use this
-    pass
+    self.w = np.matmul(np.linalg.pinv(X), Y)
   
   def predict(self, X):
-    #return wx
-    pass
-  
+    #return w
+    return self._predict(self.pad(X))
+
   def _predict(self, X):
+    #return w
     # optional to use this
-    pass
+    return np.matmul(X , self.w )
     
   def score(self, X, Y):
     #return MSE
-    pass
+    return ((X-Y)**2).mean()
 
 
 # Write a new class OlsGd which solves the problem using gradinet descent. 
@@ -37,22 +38,26 @@ class Ols(object):
 # Note: Gradient Descent does not work well when features are not scaled evenly (why?!). Be sure to normalize your feature first.
 class Normalizer():
   def __init__(self):
-    pass
+    self._x_max = None
+    self._x_min = None
 
   def fit(self, X):
-    pass
+    self._x_max = X.max(axis=0)
+    self._x_min = X.min(axis=0)
+    self._x_min[self._x_max == self._x_min] = 0
 
   def predict(self, X):
     #apply normalization
-    pass
+    return (X - self._x_min)/(self._x_max - self._x_min) 
     
 class OlsGd(Ols):
   
-  def __init__(self, learning_rate=.05, 
+  def __init__(self, learning_rate=.0005, 
                num_iteration=1000, 
                normalize=True,
                early_stop=True,
-               verbose=True):
+               verbose=True,
+               track_loss=False):
     
     super(OlsGd, self).__init__()
     self.learning_rate = learning_rate
@@ -61,18 +66,43 @@ class OlsGd(Ols):
     self.normalize = normalize
     self.normalizer = Normalizer()    
     self.verbose = verbose
+    self.track_loss = track_loss
     
-  def _fit(self, X, Y, reset=True, track_loss=True):
-    #remeber to normalize the data before starting
-    pass
-        
+  def _fit(self, X, Y, reset=True):
+    #remember to normalize the data before starting
+    losses =[]
+    if self.normalize:
+      self.normalizer.fit(X)
+      X = self.normalizer.predict(X)
+    self.w = np.random.rand(X.shape[1])
+    for epoch in range(self.num_iteration):
+      losses.append(self.score(self._predict(X),Y))
+      self._step(X,Y)
+      if (epoch > 2) & (self.early_stop):
+        if losses[-1] > losses[-2]:
+          break 
+      if self.verbose:
+        print(f'Epoch={epoch}, MSE={losses[-1]:.6f}')
+    if self.track_loss:
+      fig, ax = plt.subplots(figsize=(6,2))
+      fig.suptitle(f'Loss function with learning_rate = {self.learning_rate}')
+      ax.set_xlabel('num_iteration')
+      ax.set_ylabel('score')
+      plt.plot(losses)   
+
+    
+
   def _predict(self, X):
-    #remeber to normalize the data before starting
-    pass
+    #remember to normalize the data before starting
+      if self.normalize:
+        X = self.normalizer.predict(X)
+      return np.matmul(X , self.w )
+    
       
   def _step(self, X, Y):
     # use w update for gradient descent
-    pass
+    N = X.shape[1]
+    self.w = self.w -  self.learning_rate*2/N*(np.matmul(X.transpose(), np.matmul(X,self.w) - Y))
 
 
 class RidgeLs(Ols):
@@ -82,4 +112,5 @@ class RidgeLs(Ols):
     
   def _fit(self, X, Y):
     #Closed form of ridge regression
-    pass
+    part1 = np.linalg.inv(np.matmul(X.T,X) + self.ridge_lambda * np.identity(X.shape[1]))
+    self.w = np.matmul(np.matmul(part1,X.T),Y)
