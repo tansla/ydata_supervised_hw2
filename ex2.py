@@ -1,5 +1,6 @@
 # * write a model `Ols` which has a propoery $w$ and 3 methods: `fit`, `predict` and `score`.? hint: use [numpy.linalg.pinv](https://docs.scipy.org/doc/numpy-1.15.1/reference/generated/numpy.linalg.pinv.html) to be more efficient.
-
+import numpy as np
+import matplotlib.pyplot as plt
 class Ols(object):
   def __init__(self):
     self.w = None
@@ -74,9 +75,10 @@ class OlsGd(Ols):
     if self.normalize:
       self.normalizer.fit(X)
       X = self.normalizer.predict(X)
-    self.w = np.random.rand(X.shape[1])
+    self.w = np.zeros(X.shape[1])
+    # self.w = np.random.rand(X.shape[1])
     for epoch in range(self.num_iteration):
-      losses.append(self.score(self._predict(X),Y))
+      losses.append(self.score(self.__predict(X),Y))
       self._step(X,Y)
       if (epoch > 2) & (self.early_stop):
         if losses[-1] > losses[-2]:
@@ -90,19 +92,21 @@ class OlsGd(Ols):
       ax.set_ylabel('score')
       plt.plot(losses)   
 
-    
+  def __predict(self, X):
+      return np.matmul(X , self.w )
+
 
   def _predict(self, X):
     #remember to normalize the data before starting
       if self.normalize:
         X = self.normalizer.predict(X)
-      return np.matmul(X , self.w )
+      return self.__predict(X)
     
       
   def _step(self, X, Y):
     # use w update for gradient descent
-    N = X.shape[1]
-    self.w = self.w -  self.learning_rate*2/N*(np.matmul(X.transpose(), np.matmul(X,self.w) - Y))
+    N = X.shape[0]
+    self.w = self.w -  (2*self.learning_rate/N)*(np.matmul(X.transpose(), self.__predict(X) - Y))
 
 
 class RidgeLs(Ols):
