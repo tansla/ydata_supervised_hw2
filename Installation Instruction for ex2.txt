@@ -11,11 +11,11 @@ Below you can find how to make the exercise working on your laptop/pc, with virt
 
 4. Open terminal and go to the exercise folder location
 create a virtual machine: python -m venv ./
-python3 -m venv tutorial-env
+python3 -m venv ./
 
 5. Activate your environment. In windows you should enter: Scripts\activate.bat. 
 Then the virtual environment name shold be in parentheses before the folder name in the terminal.
-source tutorial-env/bin/activate
+source bin/activate
 
 6. Open VScode then open the exercise folder. VScode should suggest you to download python extension, otherwise, download it using the extension tab.
 Please make sure that python interpreter is the virtual environment you created (button right in VScode).
@@ -28,5 +28,7 @@ pip install scipy
 pip install pandas
 pip install matplotlib
 pip install scikit-learn
+pip install sklearn
+
 
 
